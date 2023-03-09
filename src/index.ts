@@ -1,8 +1,8 @@
 export interface Disposable {
-    dispose():void;
+    dispose(): void;
 }
 
-class Dispose implements Disposable {
+class _Disposable implements Disposable {
     constructor(dispose: () => void) {
         this._dispose = dispose
     }
@@ -13,19 +13,22 @@ class Dispose implements Disposable {
 }
 
 export class Cancelable {
-    cancel() {
+    async cancel() {
+        let fs = Array<Promise<void>>()
         this._cancels.forEach((value) => {
-            value()
+            fs.push(value())
         })
         this._cancels.clear()
+        await Promise.all(fs)
     }
-    whenCancel(f: () => void): Disposable {
+    
+    whenCancel(f: () => Promise<void>): Disposable {
         let id = this._id++
         this._cancels.set(id, f)
-        return new Dispose(() => {
+        return new _Disposable(() => {
             this._cancels.delete(id)
         })
     }
-    private _id = 0
-    private _cancels = new Map<number, () => void>()
+    private _id = -2147483648
+    private _cancels = new Map<number, () => Promise<void>>()
 }

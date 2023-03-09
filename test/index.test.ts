@@ -1,23 +1,26 @@
 import {Cancelable} from '../src/index';
 
+
 describe('index', () => {
-  it('cancel', () => {
+  it('cancel', async () => {
       var i = 0
       let cancelable = new Cancelable()
-      cancelable.whenCancel(()=>{
+      cancelable.whenCancel(async ()=>{
           i = 1
       })
-      cancelable.cancel()
+      await cancelable.cancel()
       expect(i).toEqual(1)
   });
-  it('dispose', ()=>{
+  it('dispose', async ()=>{
     var i = 0
     let cancelable = new Cancelable()
-    let disposable = cancelable.whenCancel(()=>{
+    let disposable = cancelable.whenCancel(async ()=>{
         i = 1
     })
     disposable.dispose()
-    cancelable.cancel()
+    await cancelable.cancel()
     expect(i).toEqual(0)
   })
 });
+
+
