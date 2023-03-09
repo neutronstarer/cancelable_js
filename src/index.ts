@@ -15,20 +15,20 @@ class _Disposable implements Disposable {
 export class Cancelable {
     async cancel() {
         let fs = Array<Promise<void>>()
-        this._cancels.forEach((value) => {
+        this.cancels.forEach((value) => {
             fs.push(value())
         })
-        this._cancels.clear()
+        this.cancels.clear()
         await Promise.all(fs)
     }
     
     whenCancel(f: () => Promise<void>): Disposable {
-        let id = this._id++
-        this._cancels.set(id, f)
+        let id = this.id++
+        this.cancels.set(id, f)
         return new _Disposable(() => {
-            this._cancels.delete(id)
+            this.cancels.delete(id)
         })
     }
-    private _id = -2147483648
-    private _cancels = new Map<number, () => Promise<void>>()
+    private id = -2147483648
+    private cancels = new Map<number, () => Promise<void>>()
 }
